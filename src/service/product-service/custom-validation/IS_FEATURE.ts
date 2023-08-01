@@ -1,5 +1,6 @@
-import axios from 'axios'
 import { CommonResponse, generateServiceToken } from 'common-abstract-fares-system'
+
+import axios from 'axios'
 import { TValidateFunction } from 'common-abstract-fares-system/lib/validation-tool/type-validation'
 import mongoose from 'mongoose'
 
@@ -14,7 +15,7 @@ export const IS_FEATURE: TValidateFunction = async <T extends object>(
       features: 'features invalid',
     }
   }
-  const features = Array(value)
+  const features = Array.from(value)
   const resultGet = await Promise.all(
     features.map(async (item) => {
       if (!mongoose.isValidObjectId(item)) {
@@ -22,7 +23,7 @@ export const IS_FEATURE: TValidateFunction = async <T extends object>(
       }
       const internalToken = generateServiceToken({ serviceName: process.env.SERVICE_NAME || '' })
       const callInternalProduct = await axios.get(
-        `${process.env.FEATURE_SERVICE_URL}/api/service/find-feature?id=${value}&ServiceToken=${internalToken}`
+        `${process.env.FEATURE_SERVICE_URL}/api/service/find-feature?id=${item}&ServiceToken=${internalToken}`
       )
       if (callInternalProduct.status !== 200) return {}
       const result = callInternalProduct.data as CommonResponse<any>
