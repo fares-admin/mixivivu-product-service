@@ -48,7 +48,7 @@ export const getListProductFunc = async (
       const callInternalImage = await axios.get(
         `${
           process.env.IMAGE_SERVICE_URL
-        }/api/service/find-category?belongIds=${item._id.toString()}&ServiceToken=${internalToken}`
+        }/api/images/get-list?belongIds=${item._id.toString()}&ServiceToken=${internalToken}`
       )
       if (callInternalImage.status === 200 && callInternalImage.data.success) {
         const res = callInternalImage.data.result as CommonListResult<any>
@@ -81,7 +81,7 @@ export const getListProductFunc = async (
       success: true,
       result: {
         ...result.result,
-        data: responseList.filter((item) => item.thumbnail.length > 0),
+        data: responseList,
       },
     }
   }
@@ -91,14 +91,12 @@ export const getListProductFunc = async (
     success: true,
     result: {
       ...result.result,
-      data: responseList
-        .filter((item) => item.thumbnail.length > 0)
-        .map((item) => {
-          return {
-            ...item,
-            active: undefined,
-          }
-        }),
+      data: responseList.map((item) => {
+        return {
+          ...item,
+          active: undefined,
+        }
+      }),
     },
   }
 }
