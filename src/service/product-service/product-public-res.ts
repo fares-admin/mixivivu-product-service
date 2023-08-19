@@ -37,4 +37,8 @@ export class PublicProductRes {
   scoreReview: number = 0
 
   typeProduct: TypeProduct = TypeProduct.SHIP
+
+  thumbnail: string = ''
+
+  catalogs: string[] = []
 }

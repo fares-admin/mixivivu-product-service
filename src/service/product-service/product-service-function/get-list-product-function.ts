@@ -1,5 +1,11 @@
+import {
+  CommonListResult,
+  CommonResponse,
+  generateServiceToken,
+} from 'common-abstract-fares-system'
+
 import { ProductRepository } from '@/src/repository/product-repository/product-repository'
-import { CommonListResult, CommonResponse } from 'common-abstract-fares-system'
+import axios from 'axios'
 import mongoose from 'mongoose'
 import { NextApiRequest } from 'next'
 import { PrivateProductRes } from '../product-private-res'
@@ -36,6 +42,38 @@ export const getListProductFunc = async (
       result: '',
     }
   }
+  const responseList = await Promise.all(
+    result.result.data.map(async (item) => {
+      const internalToken = generateServiceToken({ serviceName: process.env.SERVICE_NAME || '' })
+      const callInternalImage = await axios.get(
+        `${
+          process.env.IMAGE_SERVICE_URL
+        }/api/service/find-category?belongIds=${item._id.toString()}&ServiceToken=${internalToken}`
+      )
+      if (callInternalImage.status === 200 && callInternalImage.data.success) {
+        const res = callInternalImage.data.result as CommonListResult<any>
+        if (res.data.length > 0) {
+          return {
+            ...item,
+            _id: item._id.toString(),
+            category: item.category.toString(),
+            features: item.features.map((item) => item.toString()),
+            thumbnail: res.data[0].link,
+            catalogs: res.data.filter((item, index) => index > 0).map((item) => item.link),
+          }
+        }
+      }
+
+      return {
+        ...item,
+        _id: item._id.toString(),
+        category: item.category.toString(),
+        features: item.features.map((item) => item.toString()),
+        thumbnail: '',
+        catalogs: [],
+      }
+    })
+  )
   if (isAuth) {
     return {
       status: 200,
@@ -43,14 +81,7 @@ export const getListProductFunc = async (
       success: true,
       result: {
         ...result.result,
-        data: result.result.data.map((item) => {
-          return {
-            ...item,
-            _id: item._id.toString(),
-            category: item.category.toString(),
-            features: item.features.map((item) => item.toString()),
-          }
-        }),
+        data: responseList.filter((item) => item.thumbnail.length > 0),
       },
     }
   }
@@ -60,15 +91,14 @@ export const getListProductFunc = async (
     success: true,
     result: {
       ...result.result,
-      data: result.result.data.map((item) => {
-        return {
-          ...item,
-          _id: item._id.toString(),
-          category: item.category.toString(),
-          features: item.features.map((item) => item.toString()),
-          active: undefined,
-        }
-      }),
+      data: responseList
+        .filter((item) => item.thumbnail.length > 0)
+        .map((item) => {
+          return {
+            ...item,
+            active: undefined,
+          }
+        }),
     },
   }
 }
