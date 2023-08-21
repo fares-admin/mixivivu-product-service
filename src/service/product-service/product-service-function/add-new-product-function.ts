@@ -1,8 +1,9 @@
+import { CommonResponse, validate } from 'common-abstract-fares-system'
+import { ProductRequest, ProductRequestError, ProductRequestValidator } from '../product-req'
+
 import { ProductEntity } from '@/src/repository/product-repository/product-entity'
 import { ProductRepository } from '@/src/repository/product-repository/product-repository'
-import { CommonResponse, validate } from 'common-abstract-fares-system'
 import mongoose from 'mongoose'
-import { ProductRequest, ProductRequestError, ProductRequestValidator } from '../product-req'
 
 /*
     @ericchen:
@@ -43,10 +44,11 @@ export const addNewProductFunction = async (
       success: false,
     }
   }
+  const findCreated = await repository.findOne('slug', req.slug)
   return {
     status: 200,
     message: 'ok',
-    result: '',
+    result: findCreated.result?._id.toString() || '',
     success: true,
   }
 }
