@@ -71,6 +71,11 @@ export const getListProductFunc = async (
         features: item.features.map((item) => item.toString()),
         thumbnail: '',
         catalogs: [],
+        mapLink: item.mapLink === 'a' ? 'https://goo.gl/maps/6mQDuQWa4Ybq6K5p8' : item.mapLink,
+        mapIframeLink:
+          item.mapIframeLink === 'b'
+            ? 'https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d1863.1732009329894!2d106.9873709!3d20.9385997!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x314a5ed92d2389b5%3A0x21301374c6ce99a2!2zRHUgVGh1eeG7gW4gTWFyZ2FyZXQgSOG6oSBMb25n!5e0!3m2!1sen!2s!4v1692608989957!5m2!1sen!2s'
+            : item.mapIframeLink,
       }
     })
   )
