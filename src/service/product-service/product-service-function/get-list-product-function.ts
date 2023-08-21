@@ -4,12 +4,12 @@ import {
   generateServiceToken,
 } from 'common-abstract-fares-system'
 
-import { ProductRepository } from '@/src/repository/product-repository/product-repository'
-import axios from 'axios'
-import mongoose from 'mongoose'
 import { NextApiRequest } from 'next'
 import { PrivateProductRes } from '../product-private-res'
+import { ProductRepository } from '@/src/repository/product-repository/product-repository'
 import { PublicProductRes } from '../product-public-res'
+import axios from 'axios'
+import mongoose from 'mongoose'
 
 /*
       @ericchen:
@@ -59,7 +59,7 @@ export const getListProductFunc = async (
             category: item.category.toString(),
             features: item.features.map((item) => item.toString()),
             thumbnail: res.data[0].link,
-            catalogs: res.data.filter((item, index) => index > 0).map((item) => item.link),
+            catalogs: res.data.map((item) => item.link),
           }
         }
       }
